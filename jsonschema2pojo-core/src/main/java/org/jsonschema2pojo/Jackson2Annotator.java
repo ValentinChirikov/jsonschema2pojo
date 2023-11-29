@@ -45,6 +45,7 @@ import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JEnumConstant;
 import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JMethod;
+import org.jsonschema2pojo.util.JEncodingAwareStringLiteral;
 
 /**
  * Annotates generated Java types using the Jackson 2.x mapping annotations.
@@ -89,7 +90,7 @@ public class Jackson2Annotator extends AbstractTypeInfoAwareAnnotator {
         JAnnotationArrayMember annotationValue = clazz.annotate(JsonPropertyOrder.class).paramArray("value");
 
         for (Iterator<String> properties = propertiesNode.fieldNames(); properties.hasNext();) {
-            annotationValue.param(properties.next());
+            annotationValue.param(new JEncodingAwareStringLiteral(properties.next(), getGenerationConfig().getOutputEncoding()));
         }
     }
 
@@ -100,7 +101,9 @@ public class Jackson2Annotator extends AbstractTypeInfoAwareAnnotator {
 
     @Override
     public void propertyField(JFieldVar field, JDefinedClass clazz, String propertyName, JsonNode propertyNode) {
-        field.annotate(JsonProperty.class).param("value", propertyName);
+        field.annotate(JsonProperty.class).param("value",
+                new JEncodingAwareStringLiteral(propertyName, getGenerationConfig().getOutputEncoding()));
+
         if (field.type().erasure().equals(field.type().owner().ref(Set.class))) {
             field.annotate(JsonDeserialize.class).param("as", LinkedHashSet.class);
         }
@@ -111,18 +114,20 @@ public class Jackson2Annotator extends AbstractTypeInfoAwareAnnotator {
         }
 
         if (propertyNode.has("description")) {
-            field.annotate(JsonPropertyDescription.class).param("value", propertyNode.get("description").asText());
+            field.annotate(JsonPropertyDescription.class).param(
+                    "value",
+                    new JEncodingAwareStringLiteral(propertyNode.get("description").asText(), getGenerationConfig().getOutputEncoding()));
         }
     }
 
     @Override
     public void propertyGetter(JMethod getter, JDefinedClass clazz, String propertyName) {
-        getter.annotate(JsonProperty.class).param("value", propertyName);
+        getter.annotate(JsonProperty.class).param("value", new JEncodingAwareStringLiteral(propertyName, getGenerationConfig().getOutputEncoding()));
     }
 
     @Override
     public void propertySetter(JMethod setter, JDefinedClass clazz, String propertyName) {
-        setter.annotate(JsonProperty.class).param("value", propertyName);
+        setter.annotate(JsonProperty.class).param("value", new JEncodingAwareStringLiteral(propertyName, getGenerationConfig().getOutputEncoding()));
     }
 
     @Override
@@ -227,4 +232,6 @@ public class Jackson2Annotator extends AbstractTypeInfoAwareAnnotator {
             jsonTypeInfo.param("property", propertyName);
         }
     }
+
+
 }

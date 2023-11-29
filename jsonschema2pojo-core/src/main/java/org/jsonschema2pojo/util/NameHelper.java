@@ -33,7 +33,8 @@ import com.sun.codemodel.JType;
 
 public class NameHelper {
 
-    public static final String ILLEGAL_CHARACTER_REGEX = "[^0-9a-zA-Z_$]";
+//    public static final String ILLEGAL_CHARACTER_REGEX = "[^0-9a-zA-Z_$]";
+    public static final String ILLEGAL_CHARACTER_REGEX = "[^0-9а-яА-Яa-zA-Z_$]";
 
     private final GenerationConfig generationConfig;
 

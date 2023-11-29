@@ -46,6 +46,7 @@ public class FileCodeWriterWithEncoding extends com.sun.codemodel.writer.FileCod
 
             @Override
             protected boolean requireEscaping(int ch) {
+
                 // control characters
                 if (ch < 0x20 && " \t\r\n".indexOf(ch) == -1) {
                     return true;
